@@ -35,7 +35,13 @@ app.get('/biodata', async (req,res) =>{
     const result = await biodataCollection.find().toArray();
     res.send(result);
 })
-    // Send a ping to confirm a successful connection
+
+// const biodataCollection=client.db("bdMatrimonyDB").collection("biodata");
+// app.get('/biodata', async (req,res) =>{
+//     const result = await biodataCollection.find().toArray();
+//     res.send(result);
+// })
+//     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
