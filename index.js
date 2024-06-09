@@ -11,7 +11,7 @@ app.use(express.json());
 
 //MONGO
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.ptxksnq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 console.log(uri);
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -27,21 +27,37 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
-    await client.connect();
+    // await client.connect();
 
 
 
     const biodataCollection=client.db("bdMatrimonyDB").collection("biodata");
+    const userCollection=client.db("bdMatrimonyDB").collection("users");
+
+    //user api 
+app.post('/users', async (req,res)=>{
+  const user=req.body;
+  const result = await userCollection.insertOne(user);
+  res.send(result);
+
+})
+
 app.get('/biodata', async (req,res) =>{
     const result = await biodataCollection.find().toArray();
     res.send(result);
 })
 
-// const biodataCollection=client.db("bdMatrimonyDB").collection("biodata");
-// app.get('/biodata', async (req,res) =>{
-//     const result = await biodataCollection.find().toArray();
-//     res.send(result);
-// })
+//delete
+app.delete('/biodata/:id', async (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    const query = { _id:id }
+    const result = await biodataCollection.deleteOne(query);
+    res.send(result);
+  });
+
+
+
 //     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
