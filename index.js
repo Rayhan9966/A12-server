@@ -35,6 +35,19 @@ async function run() {
     const userCollection=client.db("bdMatrimonyDB").collection("users");
 
     //user api 
+    app.get('/users',  async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+    //delete user
+    app.delete('/users/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id:id }
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    });
+
 app.post('/users', async (req,res)=>{
   const user=req.body;
   //unique email
