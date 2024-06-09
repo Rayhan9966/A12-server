@@ -1,8 +1,10 @@
 const env =require("dotenv")
 env.config()
+
 const express= require('express');
 const app =express();
 const cors=require('cors');
+const jwt = require('jsonwebtoken');
 const port= process.env.PORT ||5000;
 
 //MIDLEWRE
@@ -34,11 +36,33 @@ async function run() {
     const biodataCollection=client.db("bdMatrimonyDB").collection("biodata");
     const userCollection=client.db("bdMatrimonyDB").collection("users");
 
+
+
+     // jwt related api
+     app.post('/jwt', async (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
+      res.send({ token });
+    })
+
     //user api 
     app.get('/users',  async (req, res) => {
       const result = await userCollection.find().toArray();
       res.send(result);
     });
+
+    app.patch('/users/admin/:id',async(req,res)=>{
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id:id }
+      const updateDoc={
+        $set:{
+          role:'admin'
+        }
+      }
+      const result=await userCollection.updateOne(filter,updateDoc);
+      res.send(result);
+    })
     //delete user
     app.delete('/users/:id', async (req, res) => {
       const id = req.params.id;
